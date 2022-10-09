@@ -191,7 +191,7 @@ func TestListProducts(t *testing.T) {
 		t.Fatalf("Expected empty error, got %v", err.Error())
 	}
 
-	if consumerKey != consumerSecretMock || consumerSecret != consumerKeyMock {
+	if consumerKey != consumerKeyMock || consumerSecret != consumerSecretMock {
 		t.Fatalf("Expected correct basic auth, got %s:%s", consumerKey, consumerSecret)
 	}
 
