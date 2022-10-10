@@ -2,6 +2,7 @@ package woo
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -70,7 +71,9 @@ type Product struct {
 }
 
 func (s *ProductService) List() ([]Product, error) {
-	req, err := http.NewRequest(http.MethodGet, s.apiUrl, nil)
+	apiUrl := fmt.Sprintf("%s/products", s.apiUrl)
+
+	req, err := http.NewRequest(http.MethodGet, apiUrl, nil)
 	if err != nil {
 		return []Product{}, err
 	}
