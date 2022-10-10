@@ -1,7 +1,6 @@
 package woo
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -33,5 +32,5 @@ func (c *Client) Ping() error {
 		return nil
 	}
 
-	return errors.New(fmt.Sprintf("Failed API Ping to %s", c.BaseUrl))
+	return fmt.Errorf("Failed API Ping to %s", c.BaseUrl)
 }
