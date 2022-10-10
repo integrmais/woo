@@ -180,7 +180,7 @@ func TestListProducts(t *testing.T) {
 	var expectedUri, consumerKey, consumerSecret string
 
 	serverMock := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		expectedUri = req.URL.RequestURI()
+		expectedUri = req.URL.Path
 		consumerKey, consumerSecret, _ = req.BasicAuth()
 		res.WriteHeader(http.StatusOK)
 		res.Write([]byte(product))
