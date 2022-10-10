@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 type ProductService Client
@@ -71,6 +72,14 @@ type Product struct {
 }
 
 func (s *ProductService) List() ([]Product, error) {
+	return s.ListByPage(1)
+}
+
+func (s *ProductService) ListByPage(page int) ([]Product, error) {
+	if page <= 0 {
+		page = 1
+	}
+
 	apiUrl := fmt.Sprintf("%s/products", s.apiUrl)
 
 	req, err := http.NewRequest(http.MethodGet, apiUrl, nil)
@@ -79,6 +88,11 @@ func (s *ProductService) List() ([]Product, error) {
 	}
 
 	req.SetBasicAuth(s.ConsumerKey, s.ConsumerSecret)
+
+	q := url.Values{}
+	q.Add("page", fmt.Sprintf("%d", page))
+
+	req.URL.RawQuery = q.Encode()
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
