@@ -81,7 +81,7 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 }
 
 func (c *CustomerService) List() ([]Customer, error) {
-	return c.Customer.List(0)
+	return c.Customer.ListByPage(0)
 }
 
 func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
