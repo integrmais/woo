@@ -1,10 +1,18 @@
 package woo
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+)
+
+const (
+    CustomerAllRole string = "all"
+    CustomerAdminRole = "administrator"
+    CustomerAuthorRole = "author"
+    CustomerShopManageRole = "shop_manager"
 )
 
 type CustomerService Client
@@ -18,6 +26,7 @@ type Customer struct {
 	IsPayingCustomer bool   `json:"is_paying_customer"`
 	DateCreated      string `json:"date_created"`
 	DateModified     string `json:"date_modified"`
+	Role             string `json:"role"`
 	ShippingAddress  `json:"shipping"`
 	BillingAddress   `json:"billing"`
 }
@@ -91,6 +100,25 @@ func (c *CustomerService) List() ([]Customer, error) {
 	return customers, nil
 }
 
-func (c *CustomerService) Create() error {
-	return nil
+func (c *CustomerService) Create(cm Customer) (Customer, error) {
+	serviceUrl := fmt.Sprintf("%s/customer", c.apiUrl)
+
+	bcm, _ := json.Marshal(cm)
+
+	req, err := http.NewRequest(http.MethodPost, serviceUrl, bytes.NewReader(bcm))
+	if err != nil {
+		return Customer{}, err
+	}
+
+	body, err := c.DoRequest(req)
+	if err != nil {
+		return Customer{}, nil
+	}
+
+	var customer Customer
+	if err := json.NewDecoder(body).Decode(&customer); err != nil {
+		return Customer{}, err
+	}
+
+	return customer, nil
 }

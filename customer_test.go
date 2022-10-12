@@ -8,7 +8,17 @@ import (
 	"github.com/integrmais/woo"
 )
 
-var customer = []byte(`[
+var customer = []byte(`
+{
+    "id": 5,
+    "email": "joao.silva@example.com",
+    "first_name": "joão",
+    "last_name": "silva",
+    "role": "author"
+}
+`)
+
+var customers = []byte(`[
   {
     "id": 26,
     "date_created": "2017-03-21T16:11:14",
@@ -116,7 +126,7 @@ var customer = []byte(`[
 func TestListCustomers(t *testing.T) {
 	serverMock := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusOK)
-		res.Write(customer)
+		res.Write(customers)
 	}))
 
 	c := woo.NewClient(serverMock.URL, versionMock, consumerKeyMock, consumerSecretMock)
@@ -128,5 +138,34 @@ func TestListCustomers(t *testing.T) {
 
 	if customers[0].Id != 26 {
 		t.Fatalf("Expected first customer to be 26, got %v", customers[0].Id)
+	}
+}
+
+func TestCreateCustomer(t *testing.T) {
+    serverMock := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+        res.WriteHeader(http.StatusOK)
+        res.Write(customer)
+    }))
+
+    c := woo.NewClient(serverMock.URL, versionMock, consumerKeyMock, consumerSecretMock)
+
+    cm := woo.Customer{
+		FirstName: "joão",
+		LastName: "silva",
+		Email: "joao.silva@example.com",
+		Role: woo.CustomerAuthorRole,
+	}
+
+	customerCreated, err := c.Customer.Create(cm)
+    if err != nil {
+        t.Fatalf("Expected empty error, got %v", err.Error())
+    }
+
+	if customerCreated.FirstName != cm.FirstName {
+		t.Fatalf("Expected customer first name %s, got %s", cm.FirstName, customerCreated.FirstName)
+	}
+
+	if customerCreated.Role != woo.CustomerAuthorRole {
+		t.Fatalf("Expected customer role %s, got %s", woo.CustomerAuthorRole, customerCreated.Role)
 	}
 }
