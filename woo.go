@@ -18,6 +18,7 @@ func NewClient(baseUrl, versionApi, consumerKey, consumerSecret string) *Client 
 	c.apiUrl = fmt.Sprintf("%s/wp-json/wc/%s", baseUrl, versionApi)
 
 	c.Product = (*ProductService)(c)
+	c.Customer = (*CustomerService)(c)
 
 	return c
 }

@@ -7,5 +7,6 @@ type Client struct {
 	ConsumerKey    string
 	ConsumerSecret string
 
-	Product *ProductService
+	Product  *ProductService
+	Customer *CustomerService
 }
