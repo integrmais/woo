@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -79,13 +80,26 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
-func (c *CustomerService) List() ([]Customer, error) {
+func (c *CustomerService) List(page int) ([]Customer, error) {
+	return c.Customer.List(page)
+}
+
+func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
+	if page <= 0 {
+		page = 1
+	}
+
 	serviceUrl := fmt.Sprintf("%s/customers", c.apiUrl)
 
 	req, err := http.NewRequest(http.MethodGet, serviceUrl, nil)
 	if err != nil {
 		return []Customer{}, err
 	}
+
+	q := url.Values{}
+	q.Add("page", fmt.Sprintf("%d", page))
+
+	req.URL.RawQuery = q.Encode()
 
 	body, err := c.DoRequest(req)
 	if err != nil {
