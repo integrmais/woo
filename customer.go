@@ -80,8 +80,8 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
-func (c *CustomerService) List(page int) ([]Customer, error) {
-	return c.Customer.List(page)
+func (c *CustomerService) List() ([]Customer, error) {
+	return c.Customer.List(0)
 }
 
 func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
