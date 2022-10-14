@@ -20,16 +20,18 @@ type CustomerService Client
 
 type Customer struct {
 	Id               int64  `json:"id,omitempty"`
-	AvatarURL        string `json:"avatar_url"`
-	FirstName        string `json:"first_name"`
-	LastName         string `json:"last_name"`
-	Email            string `json:"email"`
-	IsPayingCustomer bool   `json:"is_paying_customer"`
-	DateCreated      string `json:"date_created"`
-	DateModified     string `json:"date_modified"`
-	Role             string `json:"role"`
-	ShippingAddress  `json:"shipping"`
-	BillingAddress   `json:"billing"`
+	Username         string `json:"username,omitempty"`
+	AvatarURL        string `json:"avatar_url,omitempty"`
+	FirstName        string `json:"first_name,omitempty"`
+	LastName         string `json:"last_name,omitempty"`
+	Email            string `json:"email,omitempty"`
+	Password         string `json:"password,omitempty"`
+	IsPayingCustomer bool   `json:"is_paying_customer,omitempty"`
+	DateCreated      string `json:"date_created,omitempty"`
+	DateModified     string `json:"date_modified,omitempty"`
+	Role             string `json:"role,omitempty"`
+	ShippingAddress  `json:"shipping,omitempty"`
+	BillingAddress   `json:"billing,omitempty"`
 }
 
 type ShippingAddress struct {
@@ -72,19 +74,26 @@ type BillingAddress struct {
 }
 
 func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth(c.ConsumerKey, c.ConsumerSecret)
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
+	b, _ := io.ReadAll(res.Body)
+
+	fmt.Println(string(b))
+
 	return res.Body, nil
 }
 
 func (c *CustomerService) List() ([]Customer, error) {
-	return c.Customer.ListByPage(1, CustomerAllRole)
+	return c.Customer.ListByPage(1)
 }
 
-func (c *CustomerService) ListByPage(page int, role string) ([]Customer, error) {
+func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -97,12 +106,9 @@ func (c *CustomerService) ListByPage(page int, role string) ([]Customer, error) 
 	}
 
 	q := url.Values{}
-	q.Add("role", role)
 	q.Add("page", fmt.Sprintf("%d", page))
 
 	req.URL.RawQuery = q.Encode()
-
-	req.SetBasicAuth(c.ConsumerKey, c.ConsumerSecret)
 
 	body, err := c.DoRequest(req)
 	if err != nil {
@@ -118,9 +124,12 @@ func (c *CustomerService) ListByPage(page int, role string) ([]Customer, error) 
 }
 
 func (c *CustomerService) Create(cm Customer) (Customer, error) {
-	serviceUrl := fmt.Sprintf("%s/customer", c.apiUrl)
+	serviceUrl := fmt.Sprintf("%s/customers", c.apiUrl)
 
-	bcm, _ := json.Marshal(cm)
+	bcm, err := json.Marshal(cm)
+	if err != nil {
+		return Customer{}, err
+	}
 
 	req, err := http.NewRequest(http.MethodPost, serviceUrl, bytes.NewReader(bcm))
 	if err != nil {
