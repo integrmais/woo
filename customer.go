@@ -81,7 +81,7 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 }
 
 func (c *CustomerService) List() ([]Customer, error) {
-	return c.Customer.ListByPage(0)
+	return c.Customer.ListByPage(1)
 }
 
 func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
@@ -100,6 +100,8 @@ func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
 	q.Add("page", fmt.Sprintf("%d", page))
 
 	req.URL.RawQuery = q.Encode()
+
+	req.SetBasicAuth(c.ConsumerKey, c.ConsumerSecret)
 
 	body, err := c.DoRequest(req)
 	if err != nil {
