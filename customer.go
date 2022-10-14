@@ -10,10 +10,10 @@ import (
 )
 
 const (
-    CustomerAllRole string = "all"
-    CustomerAdminRole = "administrator"
-    CustomerAuthorRole = "author"
-    CustomerShopManageRole = "shop_manager"
+	CustomerAllRole        string = "all"
+	CustomerAdminRole             = "administrator"
+	CustomerAuthorRole            = "author"
+	CustomerShopManageRole        = "shop_manager"
 )
 
 type CustomerService Client
@@ -81,10 +81,10 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 }
 
 func (c *CustomerService) List() ([]Customer, error) {
-	return c.Customer.ListByPage(1)
+	return c.Customer.ListByPage(1, CustomerAllRole)
 }
 
-func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
+func (c *CustomerService) ListByPage(page int, role string) ([]Customer, error) {
 	if page <= 0 {
 		page = 1
 	}
@@ -97,6 +97,7 @@ func (c *CustomerService) ListByPage(page int) ([]Customer, error) {
 	}
 
 	q := url.Values{}
+	q.Add("role", role)
 	q.Add("page", fmt.Sprintf("%d", page))
 
 	req.URL.RawQuery = q.Encode()
