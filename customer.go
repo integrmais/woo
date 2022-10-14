@@ -13,12 +13,15 @@ const (
 	CustomerAllRole        string = "all"
 	CustomerAdminRole             = "administrator"
 	CustomerAuthorRole            = "author"
+	CustomerSellerRole            = "seller"
 	CustomerShopManageRole        = "shop_manager"
 )
 
 type CustomerService Client
 
 type Customer struct {
+	Message          string `json:"message,omitempty"`
+	Code             string `json:"code,omitempty"`
 	Id               int64  `json:"id,omitempty"`
 	Username         string `json:"username,omitempty"`
 	AvatarURL        string `json:"avatar_url,omitempty"`
@@ -81,10 +84,6 @@ func (c *CustomerService) DoRequest(req *http.Request) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	b, _ := io.ReadAll(res.Body)
-
-	fmt.Println(string(b))
 
 	return res.Body, nil
 }

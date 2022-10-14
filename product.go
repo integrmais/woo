@@ -30,6 +30,8 @@ type ProductImages []struct {
 }
 
 type Product struct {
+	Message           string  `json:"message,omitempty"`
+	Code              string  `json:"code,omitempty"`
 	Id                int64   `json:"id"`
 	Name              string  `json:"name"`
 	Slug              string  `json:"slug"`
